@@ -34,7 +34,7 @@ class CleanData:
 
     # functin to check if the first row has more than 3 missing values hence deleting it until it get's one with less than 3 nissing values
     @classmethod
-    def check_first_row(clas,df:pd.DataFrame)->bool:
+    def check_first_row(cls,df:pd.DataFrame)->bool:
         '''
         Utility function to check if the first row of a dataframe contains more than 3 missing values.
 
@@ -47,7 +47,7 @@ class CleanData:
         '''
         if df.iloc[0].isna().sum() > 3:
             df.drop(df.index[0], inplace=True)
-            return clas.check_first_row(df)
+            return cls.check_first_row(df)
         return True
     @classmethod
     def look_for_header(cls,df:pd.DataFrame):
