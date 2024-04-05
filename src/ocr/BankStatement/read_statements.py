@@ -8,6 +8,10 @@ import asyncio
 # Reading Data
 #---------------------------------------------------------------------------------------------------------------------------------------
 class ReadPdf:
+
+    """
+    Class to read tables from a PDF file using Camelot.
+    """
     
     @staticmethod
     async def read_file(file_path, flavour,strip_text,pages):
