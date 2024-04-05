@@ -1,0 +1,10 @@
+**/venv
+**/.env
+**/__pycache__
+**/.venv
+**/.classpath
+**/.dockerignore
+**/.env
+**/.vscde
+**/.vscode
+**/*.pdf
