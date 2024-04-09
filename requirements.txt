@@ -21,3 +21,4 @@ pillow
 tabula-py[jpype]
 pandas
 ghostscript
+pika

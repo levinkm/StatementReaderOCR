@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-# from routers import wallet
+from api.utils.rabbitmq import consume_from_rabbitmq
+from routers import statements
 from database import Engine
 import models.models as models
 from config.settings import DEBUG,ORIGINS
@@ -11,6 +12,11 @@ from config.settings import DEBUG,ORIGINS
 
 app = FastAPI(debug=DEBUG, title="Fedhatrac OCR API", version="0.1.0")
 
+
+@app.on_event("startup")
+async def startup_event():
+   return consume_from_rabbitmq("bank_statements")
+
 # add CORS middleware
 app.add_middleware(
     CORSMiddleware,
@@ -20,7 +26,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# app.include_router(wallet.router)
+app.include_router(statements.router)
 
 
 

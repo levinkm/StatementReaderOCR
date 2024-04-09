@@ -1,4 +1,5 @@
 import os
+import io
 
 import camelot
 import asyncio
@@ -14,7 +15,7 @@ class ReadPdf:
     """
     
     @staticmethod
-    async def read_file(file_path, flavour,strip_text,pages):
+    async def read_file(file_path, flavour,strip_text,pages, password=None):
         """
         Read tables from a PDF file using Camelot in a separate thread.
 
@@ -28,10 +29,10 @@ class ReadPdf:
             list: Tables read from the PDF file.
 
         """
-        tables = await asyncio.to_thread(camelot.read_pdf, file_path, flavor=flavour, strip_text=strip_text, pages=pages)
+        tables = await asyncio.to_thread(camelot.read_pdf, file_path, flavor=flavour, strip_text=strip_text, pages=pages, password=password)
         return tables
     @classmethod
-    async def process_file(cls,file_path)-> tuple :
+    async def process_file(cls,file_path,password=None)-> tuple :
         """
         Process a PDF file to extract tables in stream and lattice flavors in parallel.
 
@@ -43,8 +44,8 @@ class ReadPdf:
 
         """
     
-        stream_task = cls.read_file(file_path, flavour='stream', strip_text=' .\n', pages='1-end')
-        lattice_task = cls.read_file(file_path, flavour='lattice', strip_text=' .\n', pages='1-end')
+        stream_task = cls.read_file(file_path, flavour='stream', strip_text=' .\n', pages='1-end',password=password)
+        lattice_task = cls.read_file(file_path, flavour='lattice', strip_text=' .\n', pages='1-end',password=password)
         
         stream_tables, lattice_tables = await asyncio.gather(stream_task, lattice_task)
         
@@ -100,15 +101,15 @@ class ReadPdf:
             return stream_result
         
     @classmethod
-    async def main(cls,file_path):
+    async def main(cls,file_path,password=None):
         
-        stream_tables, lattice_tables = await cls.process_file(file_path)
+        stream_tables, lattice_tables = await cls.process_file(file_path,password=password)
 
         return cls.get_result(lattice_tables, stream_tables)
 
 
     @classmethod
-    def read_pdf(cls,file_path:str):
+    def read_pdf(cls,file_path:str | io.BytesIO ,password =None) :
         """
         Read a PDF file asynchronously and return the extracted text.
 
@@ -125,5 +126,5 @@ class ReadPdf:
             FileNotFoundError: If the specified file cannot be found.
             RuntimeError: If there is an issue with reading the PDF file.
         """
-        return asyncio.run(cls.main(file_path=file_path)) #
+        return asyncio.run(cls.main(file_path=file_path,password=password)) #
 

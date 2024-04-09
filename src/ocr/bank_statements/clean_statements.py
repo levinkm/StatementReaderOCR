@@ -3,7 +3,7 @@ import re
 import pandas as pd
 import numpy as np
 
-from Expressions.serachWords.bank_statements import SearchKeywords
+from expressions.serachWords.bank_statements import SearchKeywords
 
 
 #---------------------------------------------------------------------------------------------------------------------------------------
@@ -198,18 +198,18 @@ class CleanData:
             else:
                 new_columns.append(i)
         df.columns = new_columns
-        if 'debit_amount' in df.columns:
-            df = df.dropna(subset=['debit_amount'])
-            df.loc[:,'debit_amount'] = df['debit_amount'].str.replace(',', '').astype(float)
         
-        if 'credit_amount' in df.columns:
-            df = df.dropna(subset=['credit_amount'])
-            df.loc[:,'credit_amount'] = df['credit_amount'].str.replace(',', '').astype(float)
+        if 'debit_amount' in df.columns or 'credit_amount' in df.columns:
+            df = df.dropna(subset=['debit_amount', 'credit_amount'], how='all')  
+
+            for col in ['debit_amount', 'credit_amount']:  
+                if col in df.columns:
+                    df.loc[:, col] = df[col].str.replace(',', '').astype(float)
 
         
         return df
     @classmethod
-    def clean_data(cls,camelot_table: list) -> pd.DataFrame:
+    def clean_data(cls,camelot_table) -> pd.DataFrame:
         '''
         Clean and preprocess data extracted from tables using Camelot.
 
