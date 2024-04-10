@@ -2,7 +2,7 @@
 
 from typing import List, Optional
 
-from fastapi import UploadFile
+from fastapi import File, UploadFile
 from pydantic import BaseModel, constr, validator
 
 class Transaction(BaseModel):
@@ -17,7 +17,7 @@ class Transaction(BaseModel):
     class Config:
         # Allow both camelCase and snake_case for field names
         alias_generator = lambda s: s
-        allow_population_by_field_name = True
+        populate_by_name = True
     
 class BankStatementModel(BaseModel):
     account_id: str
@@ -27,16 +27,17 @@ class BankStatementModel(BaseModel):
 
 
 # bank statement file upload model
-
 class BankStatementUploadModel(BaseModel):
-    file: UploadFile
-    account_id: str
-    user_id: str
-    file_password: Optional[str] = None
-    file_name: Optional[str] = None
+    
+    name: str
+    description: str
 
-    @validator('file')
-    def file_must_be_pdf(cls, value):
-        if value.content_type != 'application/pdf':
-            raise ValueError('File must be a PDF')
-        return value
+    class Config:
+        from_attributes = True
+        arbitrary_types_allowed = True
+        json_encoders = {
+            'datetime': lambda v: v.isoformat()
+            }
+
+class BankStatementUploadRequest(BaseModel):
+    bank_statement_data: BankStatementUploadModel

@@ -22,3 +22,5 @@ tabula-py[jpype]
 pandas
 ghostscript
 pika
+aio-pika
+python-multipart

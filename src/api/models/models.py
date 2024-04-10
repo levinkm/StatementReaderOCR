@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import UUID, ARRAY
 
 import uuid
 
-from database import Base
+from src.api.database import Base
 from sqlalchemy import ForeignKey
 
 

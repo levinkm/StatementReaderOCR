@@ -1,16 +1,19 @@
+import base64
 from typing import Optional
-from schemas.schemas import BankStatementUploadModel
+from src.api.schemas.schemas import BankStatementUploadModel
 from fastapi import (
     APIRouter,
     Depends,
     File,
     Form,
     HTTPException,
+    Request,
     UploadFile,
     status,
     BackgroundTasks
 )
 
+from src.api.utils.rabbitmq import publish_bank_statement_to_rabbitmq
 
 background_tasks = BackgroundTasks()
 
@@ -19,17 +22,27 @@ router = APIRouter(tags=["bank-statements"], prefix="/bank-statements")
 # router to upload bank statements pdfs and also get the stutus of the processing the file
 @router.post("/upload", status_code=status.HTTP_201_CREATED)
 async def upload_bank_statement(
-    bank_statement_data: BankStatementUploadModel,
-    
+    request: Request,
+    account_id: str,
+    user_id: str,
+    # file: UploadFile = File(...),
+    file: UploadFile = File(...),
 ):
-    # Process the uploaded file
-    content = await bank_statement_data.file.read()
+    data1 = file.file.read()
+
+    print(data1,file=open("file_decoded.txt","w"))
     
-    #TODO:  publish the file , userid and accountid to rabbitMQ queue
+   
    
 
+    # Call the function to publish data (assuming it's implemented)
+    publish_bank_statement_to_rabbitmq({
+        "account_id": account_id,
+        "user_id": user_id,
+        "file_content": base64.b64encode(data1).decode('utf-8'),
+    }, "bank-statements")
 
+    # Do something with the file content (optional)
+    # ... your processing logic here ...
 
-    # Do something with the file content, such as saving it to disk or processing it further
-    # You can access other form fields (account_id, user_id, file_password, file_name) through bank_statement_data
-    return {"filename": bank_statement_data.file.filename}
+    return {"filename": file.filename}

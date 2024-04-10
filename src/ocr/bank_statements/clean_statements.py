@@ -3,7 +3,7 @@ import re
 import pandas as pd
 import numpy as np
 
-from expressions.serachWords.bank_statements import SearchKeywords
+from src.ocr.expressions.serachWords.bank_statements import SearchKeywords
 
 
 #---------------------------------------------------------------------------------------------------------------------------------------
@@ -209,7 +209,7 @@ class CleanData:
         
         return df
     @classmethod
-    def clean_data(cls,camelot_table) -> pd.DataFrame:
+    async def clean_data(cls, camelot_table) -> pd.DataFrame:
         '''
         Clean and preprocess data extracted from tables using Camelot.
 
@@ -223,8 +223,9 @@ class CleanData:
             pd.DataFrame: A cleaned and preprocessed DataFrame containing the extracted data.
 
         '''
-        df = cls.clean_data(camelot_table)
+        df = cls.concat_dfs(camelot_table)  # Call concat_dfs method instead of recursive call
         df = cls.rename_columns(df)
+        df.to_csv("final.csv", index=False)
         return df
 
 

@@ -1,5 +1,7 @@
 import os
 import io
+import shutil
+import tempfile
 
 import camelot
 import asyncio
@@ -15,7 +17,7 @@ class ReadPdf:
     """
     
     @staticmethod
-    async def read_file(file_path, flavour,strip_text,pages, password=None):
+    async def read_file(file, flavour,strip_text,pages, password=None):
         """
         Read tables from a PDF file using Camelot in a separate thread.
 
@@ -29,8 +31,21 @@ class ReadPdf:
             list: Tables read from the PDF file.
 
         """
-        tables = await asyncio.to_thread(camelot.read_pdf, file_path, flavor=flavour, strip_text=strip_text, pages=pages, password=password)
-        return tables
+        try:
+            with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as temp_file:
+                temp_file.write(file)
+                temp_file_path = temp_file.name
+            # Close the file to ensure data is flushed to disk
+            temp_file.close()
+
+       
+            print(f"Reading tables from {temp_file_path} using {flavour} flavor...")
+            tables = await asyncio.to_thread(camelot.read_pdf, temp_file_path, flavor=flavour, strip_text=strip_text, pages=pages, password=password)
+            return tables
+        finally:
+            # Delete the temporary file
+            os.unlink(temp_file.name)
+           
     @classmethod
     async def process_file(cls,file_path,password=None)-> tuple :
         """
@@ -109,7 +124,7 @@ class ReadPdf:
 
 
     @classmethod
-    def read_pdf(cls,file_path:str | io.BytesIO ,password =None) :
+    async def read_pdf(cls,file_path:str | io.BytesIO ,password =None) :
         """
         Read a PDF file asynchronously and return the extracted text.
 
@@ -126,5 +141,5 @@ class ReadPdf:
             FileNotFoundError: If the specified file cannot be found.
             RuntimeError: If there is an issue with reading the PDF file.
         """
-        return asyncio.run(cls.main(file_path=file_path,password=password)) #
+        return  await cls.main(file_path=file_path, password=password)#
 

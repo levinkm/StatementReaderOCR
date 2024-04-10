@@ -7,9 +7,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # MONGO DB CREDS(MONGODB)
 
-MONGO_HOST = config("MONGO_HOST", default="mongo")
-MONGO_PORT = config("MONGO_PORT", default=27017, cast=int)
-MONGO_DB = config("MONGO_DB")
+# MONGO_HOST = config("MONGO_HOST", default="mongo")
+# MONGO_PORT = config("MONGO_PORT", default=27017, cast=int)
+# MONGO_DB = config("MONGO_DB")
 
 #RELATIONAL DB CREDS(POSTGRESQL)
 
