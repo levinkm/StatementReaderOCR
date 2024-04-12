@@ -25,7 +25,6 @@ async def upload_bank_statement(
     request: Request,
     account_id: str,
     user_id: str,
-    # file: UploadFile = File(...),
     file: UploadFile = File(...),
 ):
     data1 = file.file.read()
