@@ -2,6 +2,16 @@ from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
+from decouple import config
+
+
+DB_USER =  config("DB_USER")
+DB_PASSWORD = config("DB_PASSWORD")
+DB_HOST = config("DB_HOST",default="localhost")
+DB_NAME = config("DB_NAME")
+DB_DIALECT = config("DB_DIALECT", default="postgresql")
+
+DATABASE_URL = f"{DB_DIALECT}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
 
 from alembic import context
 
@@ -76,3 +86,4 @@ if context.is_offline_mode():
     run_migrations_offline()
 else:
     run_migrations_online()
+
