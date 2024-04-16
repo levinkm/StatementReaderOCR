@@ -1,5 +1,6 @@
 fastapi
 psycopg2-binary
+psycopg
 grpcio-tools
 grpcio
 SQLAlchemy
